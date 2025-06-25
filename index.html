@@ -4,64 +4,198 @@
         <meta charset="utf-8" />
         <title>Yo Robot</title>
         <style>
+            @font-face {
+                font-family: 'Jersey 15 Regular';
+                src: url('./css/static/fonts/Jersey15-Regular.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
 
-            canvas 
-            { 
-                border: 5px solid black;
+            canvas
+            {
                 display: block;
                 border-radius: 15px;
                 width: 1200px;
                 height: 800px;
-                position: absolute;     /* Posicionamiento absoluto */
-                top: 55%;               /* Centrar verticalmente (aproximado) */
-                left: 50%;              /* Centrar horizontalmente (aproximado) */
-                transform: translate(-50%, -50%); /* Centrado perfecto */
+                position: absolute;
+                top: 55%;
+                left: 50%;
+                transform: translate(-50%, -50%);
                 background-color: white;
-                z-index: 1;             /* Asegura que el canvas esté en la capa base */
+                z-index: 1;
             }
 
-            body 
+            body
             {
-                min-height: 100vh;      /* Asegura que el cuerpo ocupe toda la altura de la ventana */
+                min-height: 100vh;
                 margin: 0;
-                background-color: grey;
+                background-color: #313131;
+                font-family: 'Jersey 15 Regular', sans-serif;
+                font-size: 18px;
+                /* MODIFICACIÓN: Degradado en el body para la sombra inferior */
+                background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 33%, transparent 100%);
+
             }
 
-            #spawn_button 
-            {
-                background-color: #3294f2;
+            #game_title {
+                margin-top: 20px;
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 2;
                 color: white;
-                font-size: 20px;
-                font-weight: bold;
+                font-family: 'Jersey 15 Regular', sans-serif;
+                font-size: 90px;
+                text-align: center;
+                width: 100%;
+                white-space: nowrap;
+            }
+
+
+            .gradient-text {
+                display: inline-block;
+                -webkit-background-clip: text;
+                background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .pixel-cyan-gradient {
+                background-image: linear-gradient(to top, #00bcd4 55%, white 100%);
+                margin-right: 20px;
+            }
+
+            .mech-yellow-gradient {
+                background-image: linear-gradient(to top, #ffeb3b 55%, white 100%);
+                margin-right: 20px;
+            }
+
+            .mayhem-magenta-gradient {
+                background-image: linear-gradient(to top, #e91e63 55%, white 100%);
+            }
+
+            #spawn_button_container
+            {
+                position: absolute;
+                top: 20vh;
+                left: 5vh;
+                z-index: 2;
+                display: flex;
+                flex-direction: column;
+                gap: 25px;
+            }
+
+            .bot_button
+            {
+                color: white;
+                font-size: 27px;
+                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
                 width: 250px;
                 height: 75px;
                 padding-left: 35px;
                 border: none;
                 border-radius: 8px;
-                box-shadow: 
-                    0 6px 2px #1b5a97,      /* sombra abajo */
-                    6px 2px 2px #1b5a97,    /* sombra derecha */
-                    6px 6px 0 #1b5a97;      /* esquina inferior derecha */
-                position: absolute;
-                top: 20vh;
-                left: 5vh;
                 cursor: pointer;
-                z-index: 2;
                 text-align: left;
                 transition: transform 0.5s ;
+                font-family: 'Jersey 15 Regular', sans-serif;
             }
-            #spawn_button:active 
+            .bot_button:active
             {
                 transform: translate(4px, 4px);
-                box-shadow: 
-                    0 4px 0 #1b5a97,
-                    4px 0 0 #1b5a97,
-                    4px 4px 0 #1b5a97;
             }
+
+            .bot-cian {
+                background-color: #00bcd4;
+                box-shadow: 0 6px 2px #008ba8, 6px 2px 2px #008ba8, 6px 6px 0 #008ba8;
+            }
+            .bot-cian:active {
+                box-shadow: 0 4px 0 #008ba8, 4px 0 0 #008ba8, 4px 4px 0 #008ba8;
+            }
+
+            .bot-yellow {
+                background-color: #ffeb3b;
+                box-shadow: 0 6px 2px #fbc02d, 6px 2px 2px #fbc02d, 6px 6px 0 #fbc02d;
+            }
+            .bot-yellow:active {
+                box-shadow: 0 4px 0 #fbc02d, 4px 0 0 #fbc02d, 4px 4px 0 #fbc02d;
+            }
+
+            .bot-magenta {
+                background-color: #e91e63;
+                box-shadow: 0 6px 2px #c2185b, 6px 2px 2px #c2185b, 6px 6px 0 #c2185b;
+            }
+            .bot-magenta:active {
+                box-shadow: 0 4px 0 #c2185b, 4px 0 0 #c2185b, 4px 4px 0 #c2185b;
+            }
+
+            .bot-black {
+                background-color: #212121;
+                color: white;
+                box-shadow: 0 6px 2px #000000, 6px 2px 2px #000000, 6px 6px 0 #000000;
+            }
+            .bot-black:active {
+                box-shadow: 0 4px 0 #000000, 4px 0 0 #000000, 4px 4px 0 #000000;
+            }
+
+
+            #characters_list {
+                position: absolute;
+                top: 20vh;
+                right: 5vh;
+                z-index: 2;
+                padding: 10px;
+                border-radius: 8px;
+                list-style: none;
+                margin: 0;
+                max-height: 500px;
+                overflow-y: auto;
+                width: 250px;
+                font-family: 'Jersey 15 Regular', sans-serif;
+                font-size: 16px;
+            }
+
+            .character-list-item {
+                display: flex;
+                background-color: #a8a8a8;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 5px;
+                padding: 5px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-family: 'Jersey 15 Regular', sans-serif;
+                font-size: 22px;
+                font-family: 'Jersey 15 Regular', sans-serif;
+            }
+
+            .character-list-item.selected {
+                background-color: white;
+                border-color: white;
+            }
+
+            .select-btn {
+                color: white;
+                border: none;
+                padding: 5px 10px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-family: 'Jersey 15 Regular', sans-serif;
+                font-size: 20px;
+                text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+            }
+            .select-btn:hover {
+                filter: brightness(1.1);
+            }
+
+            .select-btn.bot-cian-select { background-color: #00bcd4; }
+            .select-btn.bot-yellow-select { background-color: #ffeb3b; }
+            .select-btn.bot-magenta-select { background-color: #e91e63; }
+            .select-btn.bot-black-select { background-color: #212121; }
+
         </style>
     </head>
     <body>
-        
+
     </body>
     <script type="module" src="./main.js"></script>
 </html>

@@ -1,14 +1,13 @@
 import { drawFrame, flipView } from "./draw.js";
-import { setupCanvas, setupContext} from "./character_setup.js";
-
 
 export class Character
 {
-    constructor(img, mainCanvas, mainContext)
+    constructor(img, mainCanvas, mainContext, imageKey)
     {
         this.canvas  = mainCanvas;
         this.context = mainContext;
 
+        this.imageKey = imageKey;
         this.image   = img
         this.canvasX = 500;     //pos. de dibujo inicial
         this.canvasY = 640;     //pos. de dibujo inicial

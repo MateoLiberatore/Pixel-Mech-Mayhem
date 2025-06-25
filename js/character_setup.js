@@ -5,12 +5,17 @@
  */
 export function setupCanvas() 
 {
-    const canvas = document.getElementById('canvas');
-    
-    if (canvas) {
-        console.log('setupCanvas: Canvas encontrado.', canvas);
-    } else {
-        console.error('setupCanvas: ¡ERROR! Canvas no encontrado.');
+    let canvas = document.getElementById('canvas');
+    if (!canvas) 
+    {
+        canvas = document.createElement('canvas');
+        canvas.id = 'canvas';
+        document.body.appendChild(canvas); 
+        console.log('setupCanvas: Canvas creado y añadido al DOM.', canvas); //
+    } 
+    else
+    {
+        console.log('setupCanvas: Canvas encontrado (ya existía).', canvas); //
     }
     return canvas;
 }
@@ -21,15 +26,15 @@ export function setupCanvas()
  */
 export function setupContext(canvas)
 {
-    if (!canvas) {
+   if (!canvas) {
         console.error('setupContext: ¡ERROR! Canvas es nulo o indefinido.');
         return null;
     }
     const context = canvas.getContext('2d');
     if (context) {
-        console.log('setupContext: Contexto 2D obtenido.', context);
+        console.log('setupContext: Contexto 2D obtenido.', context); //
     } else {
-        console.error('setupContext: ¡ERROR! No se pudo obtener el contexto 2D.');
+        console.error('setupContext: ¡ERROR! No se pudo obtener el contexto 2D.'); //
     }
     return context;
 }

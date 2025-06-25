@@ -1,140 +1,126 @@
-import { Keyboard } from './character_controler.js';
-import { ResourceLoader } from './resourceLoader.js';
+import { setupCanvas, setupContext} from "./character_setup.js";
 
-export class SetupUI 
+
+export class SetupUI
 {
-    constructor() 
+    constructor()
     {
         this.isLoaded = false;
-        this.images = 
+        this.images =
         {
-            'blue_bot': './css/static/images/magenta_bot.svg',
+            'cian_bot': './css/static/images/cian_bot.svg',
+            'yellow_bot': './css/static/images/yellow_bot.svg',
+            'magenta_bot': './css/static/images/magenta_bot.svg',
+            'black_bot': './css/static/images/black_bot.svg',
             'city': './css/static/backgrounds/city.jpg'
         };
-        this.canvas = document.createElement('canvas');
-        this.context = null;
-        this.buttons = 
-        {
-            spawnBotButton: document.createElement('button'),
-        };
-        this.charactersList = null;
-    }
-}
-
-export class InstanceManager 
-{
-    constructor() 
-    {
-        this.loader = new ResourceLoader();
-        this.characters = [];
-        this.controller = null;
-        this.nextCharacterId = 1;
-        this.selectedCharacterId = null;
-        // Instantiate SetupUI here if InstanceManager needs to interact with its properties directly.
-        // If SetupUI is initialized in main.js and passed to InstanceManager, remove this line.
-        // For now, keeping it here as per the original plan where InstanceManager manages UI elements.
-        this.setupUI = new SetupUI(); 
-    }
-
-    characterSelection(event) 
-    {
-        if (event && event.stopPropagation) 
-        {
-            event.stopPropagation();
-        }
-
-        const clickedElement = event.currentTarget;
-        const charId = parseInt(clickedElement.dataset.characterId);
-
-        if (!isNaN(charId)) 
-        {
-            this.selectCharacter(charId);
-        } 
-        else 
-        {
-            console.warn("Error: No se pudo obtener el ID del personaje del elemento clickeado.");
-        }
-    }
-
-    addToList(character) 
-    {
-        const listItem = document.createElement('li');
-        listItem.classList.add('character-list-item');
-        listItem.dataset.characterId = character.id;
-        listItem.id = 'blue-button';
-
-        const textSpan = document.createElement('span');
-        textSpan.textContent = `Personaje ID: ${character.id}`;
-        listItem.appendChild(textSpan);
-
-        const selectButton = document.createElement('button');
-        selectButton.textContent = 'Seleccionar';
-        selectButton.classList.add('select-btn');
-        selectButton.dataset.characterId = character.id;
-        listItem.appendChild(selectButton);
-
-        // Bind 'this' to the characterSelection method when adding the event listener
-        selectButton.addEventListener('click', this.characterSelection.bind(this));
-        listItem.addEventListener('click', this.characterSelection.bind(this));
-
-        // Ensure charactersList is initialized before appending
-        if (this.setupUI.charactersList) 
-        {
-            this.setupUI.charactersList.appendChild(listItem);
-        } else 
-        {
-            console.error("Error: setupUI.charactersList is not initialized.");
-        }
-    }
-
-    selectCharacter(charId) 
-    {
-        const foundCharacter = this.characters.find(function matchId(c) 
-        {
-            return c.id === charId;
-        });
-
-        if (foundCharacter)
-        {
-            this.selectedCharacterId = charId;
-
-            if (this.controller) 
-            {
-                this.controller.setControlledCharacter(foundCharacter);
-            } 
-            else 
-            {
-                console.error("Error: El controlador 'this.controller' no ha sido inicializado al intentar seleccionar un personaje.");
-                return;
+        // MODIFICACIÓN: Nueva propiedad 'colors' para mapear claves de imagen a clases CSS
+        this.colors = {
+            'cian_bot': {
+                name: 'cian',
+                bgClass: 'bot-cian',
+                selectClass: 'bot-cian-select'
+            },
+            'yellow_bot': {
+                name: 'yellow',
+                bgClass: 'bot-yellow',
+                selectClass: 'bot-yellow-select'
+            },
+            'magenta_bot': {
+                name: 'magenta',
+                bgClass: 'bot-magenta',
+                selectClass: 'bot-magenta-select'
+            },
+            'black_bot': {
+                name: 'black',
+                bgClass: 'bot-black',
+                selectClass: 'bot-black-select'
             }
-
-            console.log(`Controlador reasignado al Personaje ID: ${charId}`);
-
-            this.updateHiglight();
-        } 
-        else 
-        {
-            console.warn(`Advertencia: No se encontró el personaje con ID: ${charId} para seleccionar.`);
-        }
+        };
+        this.canvas                 = null;
+        this.context                = null;
+        this.buttons                = {};
+        this.charactersList         = null;
+        this.spawnButtonContainer   = null;
+        this.gameTitle              = null; // MODIFICACIÓN: Propiedad para el título H1
     }
 
-    updateHiglight() 
+    initialize()
     {
-        if (this.setupUI.charactersList) 
-        {
-            const listItems = this.setupUI.charactersList.querySelectorAll('.character-list-item');
+        // elementos span del titulo para poder aplicarle estilos
+       // MODIFICACIÓN: Creación y adjunción del título H1 con spans para degradados
+        this.gameTitle = document.createElement('h1');
+        this.gameTitle.id = 'game_title';
 
-            listItems.forEach(function eachListItem(item) 
-            {
-                if (parseInt(item.dataset.characterId) === this.selectedCharacterId) 
-                {
-                    item.classList.add('selected');
-                } 
-                else 
-                {
-                    item.classList.remove('selected');
-                }
-            }.bind(this)); // Bind 'this' for the forEach callback
+        // Creación del span para "PIXEL"
+        const pixelSpan = document.createElement('span');
+        pixelSpan.textContent = 'PIXEL';
+        pixelSpan.classList.add('gradient-text', 'pixel-cyan-gradient');
+        this.gameTitle.appendChild(pixelSpan);
+
+        // Creación del span para "MECH"
+        const mechSpan = document.createElement('span');
+        mechSpan.textContent = 'MECH';
+        mechSpan.classList.add('gradient-text', 'mech-yellow-gradient');
+        this.gameTitle.appendChild(mechSpan);
+
+        // Creación del span para "MAYHEM"
+        const mayhemSpan = document.createElement('span');
+        mayhemSpan.textContent = 'MAYHEM';
+        mayhemSpan.classList.add('gradient-text', 'mayhem-magenta-gradient');
+        this.gameTitle.appendChild(mayhemSpan);
+
+        document.body.appendChild(this.gameTitle); // <-- Añadir el H1 con sus spans al body
+
+        this.canvas = setupCanvas();
+        this.context = setupContext(this.canvas);
+
+        if (!this.canvas)
+        {
+            console.error("Error: Canvas no pudo ser creado o encontrado.");
+            return;
         }
+
+        this.canvas.width = 1200;
+        this.canvas.height = 800;
+
+        this.spawnButtonContainer = document.createElement('div');
+        this.spawnButtonContainer.id = 'spawn_button_container';
+        document.body.appendChild(this.spawnButtonContainer);
+
+        if (!this.spawnButtonContainer) {
+            console.error("Error: Elemento con ID 'spawn_button_container' no encontrado.");
+            return;
+        }
+
+        for (const key in this.images)
+        {
+            if (key.includes('_bot'))
+            {
+                const button = document.createElement('button');
+                button.dataset.botKey = key;
+
+                const botName = key.replace('_', ' ').replace('bot', ' Bot');
+                button.innerText = `Spawn ${botName.charAt(0).toUpperCase() + botName.slice(1)}`;
+
+                button.classList.add('bot_button');
+                // MODIFICACIÓN: Añadir la clase de color correspondiente al botón de spawn
+                if (this.colors[key]) {
+                    button.classList.add(this.colors[key].bgClass);
+                }
+                button.id = `spawn_${key}`;
+                button.disabled = true;
+
+                this.spawnButtonContainer.appendChild(button);
+                this.buttons[key] = button;
+            }
+        }
+
+        this.charactersList = document.createElement('ul');
+        this.charactersList.id = 'characters_list';
+        document.body.appendChild(this.charactersList);
+
+        console.log('SetupUI: Todos los elementos del DOM han sido creados y añadidos.');
+
     }
 }
