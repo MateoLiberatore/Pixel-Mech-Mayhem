@@ -1,7 +1,21 @@
-export class Keyboard {
+/**
+ * @class Keyboard
+ * @classdesc 
+ * - Manages keyboard events to manipulate character instances
+ * - Translates global keyboard entries into states for a Character object
+ */
+export class Keyboard 
+{
     
     constructor() 
     {
+        /**
+         * @constructor 
+         * @property {state}    keys                    - Current key state
+         * @property {Object}   controlledCharacter     - Instance to control
+         * @property {Event}    handleKeyDown               
+         * @property {Event}    handleKeyUp
+         */
         this.keys = 
         {
             left: false,
@@ -17,12 +31,22 @@ export class Keyboard {
         window.addEventListener('keyup', this.handleKeyUp);
         
     }
+    /**
+     * @method
+     * @param {Object} Character 
+     * @description Asigns the controller to a Character insatnce
+     */
     setControlledCharacter(character) 
     {
         this.controlledCharacter = character;
         console.log(`Keyboard: Control asignado al Personaje ID: ${character ? character.id : 'ninguno'}`);
     }
 
+    /**
+     * @method
+     * @param {Event} event - pressed key 
+     * @returns ends if no character instance found
+     */
     handleKeyDown(event) 
     { 
         if (!this.controlledCharacter) return;
@@ -63,6 +87,11 @@ export class Keyboard {
         }
     }
 
+        /**
+     * @method
+     * @param {Event} event - pressed key 
+     * @returns ends if no character instance found
+     */
     handleKeyUp(event) 
     {
         if (!this.controlledCharacter) return;

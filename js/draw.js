@@ -3,7 +3,7 @@ export function drawFrame(frameX, frameY, canvasX, canvasY,
 {
     context.drawImage(img,
     frameX * width, frameY * height, width, height,
-    canvasX, canvasY, scaledWidth, scaledHeight);
+    Math.floor(canvasX), Math.floor(canvasY), scaledWidth, scaledHeight);
 }
 
 export function flipView(
@@ -14,7 +14,7 @@ export function flipView(
             scaledWidth, scaledHeight)
 {
         context.save(); // Guardamos el estado del contexto
-        context.translate(canvasX + scaledWidth, canvasY);
+        context.translate(Math.floor(canvasX) + scaledWidth, Math.floor(canvasY));
         context.scale(-1, 1); // espejo
     
         drawFrame(

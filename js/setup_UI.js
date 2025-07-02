@@ -1,6 +1,7 @@
 import { setupCanvas, setupContext} from "./character_setup.js";
 
 
+
 export class SetupUI
 {
     constructor()
@@ -72,9 +73,13 @@ export class SetupUI
 
         document.body.appendChild(this.gameTitle); // <-- Añadir el H1 con sus spans al body
 
+
+
         this.canvas = setupCanvas();
         this.context = setupContext(this.canvas);
 
+
+        
         if (!this.canvas)
         {
             console.error("Error: Canvas no pudo ser creado o encontrado.");

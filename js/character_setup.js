@@ -30,11 +30,14 @@ export function setupContext(canvas)
         console.error('setupContext: ¡ERROR! Canvas es nulo o indefinido.');
         return null;
     }
-    const context = canvas.getContext('2d');
-    if (context) {
-        console.log('setupContext: Contexto 2D obtenido.', context); //
-    } else {
-        console.error('setupContext: ¡ERROR! No se pudo obtener el contexto 2D.'); //
+    const context = canvas.getContext('2d'); // context of the drawing associated to canvas
+    if (context) 
+    {
+        console.log('setupContext: Contexto 2D obtenido.', context); 
+    } 
+    else 
+    {
+        console.error('setupContext: ¡ERROR! No se pudo obtener el contexto 2D.'); 
     }
     return context;
 }

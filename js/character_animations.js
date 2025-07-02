@@ -1,32 +1,62 @@
 import { drawFrame, flipView } from "./draw.js";
 
+/**
+ * @class - Character
+ */
+
 export class Character
 {
     constructor(img, mainCanvas, mainContext, imageKey)
     {
+        /**
+        * @constructor  
+        *      @param {img}         image           - Image object, sprite to hydrate other class animations 
+        *      @param {mainCanvas}  canvas          - canvas canvas where to draw the animations
+        *      @param {mainContext} context         - 'this' context where the drawing will be done
+        *      @param {imageKey}    imageKey        - string to reference the image resource and apply CSS styles
+        */
+
         this.canvas  = mainCanvas;
         this.context = mainContext;
-
         this.imageKey = imageKey;
         this.image   = img
-        this.canvasX = 500;     //pos. de dibujo inicial
-        this.canvasY = 640;     //pos. de dibujo inicial
+
+        /**
+         * @type {integer}
+         * @property {X position}   canvasX         - starting draw position
+         * @property {Y position}   canvasY         - starting draw position
+         * @property {Floor}        groundY         - definition of the lower position in the canvas
+         * @property {Speed}        speed           - pixel displacement in animations (adds to canvasX positions)
+         * @property {Scale}        scale           - sprite size multiplayer to determine 
+         * @property {Width}        width           - represents the amount of width pixels to use in the capture of sprite images
+         * @property {Height}       height          - represents the amount of height pixels to use in the capture of sprite images
+         * @property {Scale}        scaledWidth     - size to draw
+         * @property {Scale}        scaledHeight    - size to draw
+         */
+        this.canvasX = 500;
+        this.canvasY = 640;
         this.groundY = 640;
         this.speed   = 2;
-
         this.scale  = 6;
         this.width  = 32;
         this.height = 32;
-
         this.scaledWidth  = this.scale * this.width;
         this.scaledHeight = this.scale * this.height;
 
+        /**
+         * @type {Object} 
+         * - movement classes, they manage animation loops and movement around the canvas
+         */
         this.rightStepAction = new RightStep(this);
         this.leftStepAction  = new LeftStep(this);
         this.jumpAction      = new Jump(this);
         this.stopAction      = new Stop(this);
 
-        this.states = 
+        /**
+         * @type {string}
+         * - states to representig movements
+         */
+        this.states =   
         {
             'walkingRight': this.rightStepAction,
             'walkingLeft':  this.leftStepAction,
@@ -34,15 +64,30 @@ export class Character
             'idle':         this.stopAction,
         };
 
+        /**
+         * @type {string, state}
+         * - state:
+         *      - setup
+         *      - management
+         *      - representation
+         */
         this.currentState = 'idle';
         this.currentAction = this.states[this.currentState];
         this.characterDirection = null;
     }
 
+    /**
+     * @method
+     * @param {String} newState 
+     * @links : links the states with the movement and animation
+     * @param {integer} direction 
+     * - 1  = rigth
+     * - 0  = null
+     * - -1 = left
+     */
     setState(newState, direction = 0)
     {
-        // Esta verificación evita que se inicie un nuevo salto si ya está en uno.
-        // Es buena práctica y ya la tenías en tu código original.
+        // verify if is jumping to avoid double jumps
         if (this.isJumping && newState === 'jumping') {
             return;
         }
@@ -74,12 +119,18 @@ export class Character
                 this.currentAction = this.stopAction;
         }
 
-        // Inicia la acción si no es 'jumping', ya que 'jumping' se inicia a sí mismo
+        // starts the action if it's not 'jumping', since jumping starts it self
         if (this.currentAction && this.currentAction.init && newState !== 'jumping')
         {
             this.currentAction.init();
         }
     }
+
+    /**
+     * @method
+     * @fires cancelAnimationFrame()
+     * - animationFrameId = null;
+     */
     cancelAnimation()
     {
         if (this.animationFrameId !== null)
@@ -88,18 +139,26 @@ export class Character
             this.animationFrameId = null;
         }
     }
+
+    /**
+     * @method
+     * @implements {draw()}
+     * @implements {class.update()}
+     * - uses the update method of the corresponding animation class
+     */
     update()
     {
-        this.currentAction.update(); // Primero, actualiza el estado interno de la acción (posición, frame de animación)
-        this.draw();                 // Luego, dibuja el personaje usando los datos actualizados
+        this.currentAction.update(); // first, updates the intern state of the action
+        this.draw();                 // then draws the character with the updated states
     }
     draw()
     {
         const currentFrameX = this.loopIndex;
-        const currentFrameY = this.frameY; // Usar el frameY del Character (que fue actualizado por la acción)
+        const currentFrameY = this.frameY; // frameY it is the updated value to draw
 
         if (this.characterDirection === 'left')
         {
+            // if 'left' need to mirror the draw
             flipView(   currentFrameX,      currentFrameY,
                         this.canvasX,       this.canvasY,
                         this.context,       this.image,
@@ -117,10 +176,19 @@ export class Character
     }
 }
 
+/**
+ * @class - walk right
+ */
 class RightStep
 {
     constructor(character)
     {
+        /**
+         * @constructor
+         * @param    {Object}      Character
+         * @property {sprite row}  cycleLoop    - row of sprite images
+         * @property {loopIndex}   
+         */
         this.character    = character;
         this.cycleLoop    = [0,1,2,3,4,5];
         this.loopIndex    = 0;

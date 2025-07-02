@@ -3,20 +3,47 @@ import { Character } from './character_animations.js';
 import { ResourceLoader } from './resource_loader.js';
 import { SetupUI } from './setup_UI.js';
 
+/**
+ * @class InstanceManager
+ * @classdesc Central class that manages:
+ *      @instance   Character instances
+ *      @instance   UI configurations 
+ *      @instance   Keyboard controller
+ *      @extends {CustomEvent}
+ *          @example 'ready'           
+ *      @extends {Event}
+ *          @example 'click'
+ */
 export class InstanceManager extends EventTarget
 {
     constructor()
     {
+        /**
+         * @constructor
+         * @property {Super}            Super                   - EventTarget inicialization         
+         * @property {Object}           loader                  - Resource loader insatnce
+         * @property {Object}           Controller              - Keyboard instance 
+         * @property {Object}           SetupUI                 - Interface instance
+         * @property {Object Array[]}   Characters              - Array of character instances
+         * @property {ID}               nextCharacterId         - Next Character instance ID to spawn
+         * @property {Instance}         selectedCharacterId     - Current instance ID
+         */
         super();
-
-        this.loader = new ResourceLoader();
-        this.controller = new Keyboard();
-        this.setupUI = new SetupUI();
-        this.characters = [];
-        this.nextCharacterId = 1;
-        this.selectedCharacterId = null;
+        this.loader                 = new ResourceLoader();
+        this.controller             = new Keyboard();
+        this.setupUI                = new SetupUI();
+        this.characters             = [];
+        this.nextCharacterId        = 1;
+        this.selectedCharacterId    = null;
     }
 
+    /**
+     * @method
+     * @instance SetupUI
+     * @instance Loader
+     *      @returns graphic resources
+     *      @emits CustomEvent 'loaded'
+     */
     initialize()
     {
         this.setupUI.initialize();
@@ -24,6 +51,10 @@ export class InstanceManager extends EventTarget
         this.loader.loadImages(this.setupUI.images);
     }
 
+    /**
+     * @method
+     * @param {Event} event -'click'
+     */
     handleSpawnClick(event)
     {
         const botKey = event.currentTarget.dataset.botKey;
@@ -33,6 +64,14 @@ export class InstanceManager extends EventTarget
         }
     }
 
+    /**
+     * @method
+     * @event 'click'
+     * @event 'ready'
+     * @description 
+     *      - click event to spawn Character instances
+     *      - ready customEvent to allow the gameloop to to start
+     */
     onResourcesLoaded(event)
     {
         const payload = event.detail;
@@ -56,6 +95,11 @@ export class InstanceManager extends EventTarget
         }
     }
 
+    /**
+     * @method
+     * @param {String} imageKey 
+     * @returns 
+     */
     spawnCharaceter(imageKey)
     {
         if(!this.setupUI.isLoaded)
@@ -70,8 +114,7 @@ export class InstanceManager extends EventTarget
             console.error(`La imagen '${imageKey}' no esta disponible en el Loader`);
             return;
         }
-
-        // MODIFICACIÓN: Pasar el 'imageKey' al constructor de Character
+        //imagKey in contructor to apply correct CSS styles when spawn
         const newBot = new Character(characterImage, this.setupUI.canvas, this.setupUI.context, imageKey);
         newBot.id = this.nextCharacterId++;
 
