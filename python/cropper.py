@@ -29,7 +29,6 @@ def crop_blue_robot_sprites(input_path, output_path):
 
         # Realiza el recorte de la imagen
         cropped_img = img.crop((left, upper, right, lower))
-        #guardar
         cropped_img.save(output_path)
         print(f"Sprites recortados guardados en: '{output_path}'")
 
@@ -38,5 +37,5 @@ def crop_blue_robot_sprites(input_path, output_path):
     except Exception as e:
         print(f"Ocurrió un error al procesar la imagen: {e}")
 
-#tuqui :]
+#tuki :]
 crop_blue_robot_sprites(input_image_path, output_image_path)

@@ -1,11 +1,25 @@
 import { setupCanvas, setupContext} from "./character_setup.js";
 
-
+/**
+ * @class
+ */
 
 export class SetupUI
 {
     constructor()
     {
+        /**
+         * @constructor
+         * @property    {isLoaded}              - flag
+         * @property    {images}                - image src
+         * @property    {colors}                - match code an css styles        
+         * @property    {canvas}
+         * @property    {context}               - canvas context (2d)
+         * @property    {buttons}   -
+         * @property    {characterList}
+         * @property    {spawnButtonContainer}  - 
+         * @property    {gameTitle}             - H1 HTML element compound of span elements
+         */
         this.isLoaded = false;
         this.images =
         {
@@ -15,7 +29,7 @@ export class SetupUI
             'black_bot': './css/static/images/black_bot.svg',
             'city': './css/static/backgrounds/city.jpg'
         };
-        // MODIFICACIÓN: Nueva propiedad 'colors' para mapear claves de imagen a clases CSS
+       
         this.colors = {
             'cian_bot': {
                 name: 'cian',
@@ -43,37 +57,38 @@ export class SetupUI
         this.buttons                = {};
         this.charactersList         = null;
         this.spawnButtonContainer   = null;
-        this.gameTitle              = null; // MODIFICACIÓN: Propiedad para el título H1
+        this.gameTitle              = null; 
     }
 
+    /**
+     * @method
+     * @description
+     *      - UI HTML generation
+     *      - H1  element compound of span elements
+     *      - internal resolution of the canvas (1200*800)
+     *      - buttons & button list
+     */
     initialize()
     {
-        // elementos span del titulo para poder aplicarle estilos
-       // MODIFICACIÓN: Creación y adjunción del título H1 con spans para degradados
         this.gameTitle = document.createElement('h1');
         this.gameTitle.id = 'game_title';
 
-        // Creación del span para "PIXEL"
         const pixelSpan = document.createElement('span');
         pixelSpan.textContent = 'PIXEL';
         pixelSpan.classList.add('gradient-text', 'pixel-cyan-gradient');
         this.gameTitle.appendChild(pixelSpan);
 
-        // Creación del span para "MECH"
         const mechSpan = document.createElement('span');
         mechSpan.textContent = 'MECH';
         mechSpan.classList.add('gradient-text', 'mech-yellow-gradient');
         this.gameTitle.appendChild(mechSpan);
 
-        // Creación del span para "MAYHEM"
         const mayhemSpan = document.createElement('span');
         mayhemSpan.textContent = 'MAYHEM';
         mayhemSpan.classList.add('gradient-text', 'mayhem-magenta-gradient');
         this.gameTitle.appendChild(mayhemSpan);
 
         document.body.appendChild(this.gameTitle); // <-- Añadir el H1 con sus spans al body
-
-
 
         this.canvas = setupCanvas();
         this.context = setupContext(this.canvas);
@@ -109,7 +124,6 @@ export class SetupUI
                 button.innerText = `Spawn ${botName.charAt(0).toUpperCase() + botName.slice(1)}`;
 
                 button.classList.add('bot_button');
-                // MODIFICACIÓN: Añadir la clase de color correspondiente al botón de spawn
                 if (this.colors[key]) {
                     button.classList.add(this.colors[key].bgClass);
                 }

@@ -34,7 +34,8 @@ export class Keyboard
     /**
      * @method
      * @param {Object} Character 
-     * @description Asigns the controller to a Character insatnce
+     * @description
+     *      - Asigns the controller to a Character insatnce
      */
     setControlledCharacter(character) 
     {

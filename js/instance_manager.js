@@ -124,6 +124,11 @@ export class InstanceManager extends EventTarget
         this.addToList(newBot);
     }
 
+    /**
+     * @param {stopPropagation} event
+     * @description
+     *      -  Stop 'click' event propagation on character list selection 
+     */
     characterSelection(event)
     {
         if (event && event.stopPropagation)
@@ -144,6 +149,11 @@ export class InstanceManager extends EventTarget
         }
     }
 
+    /**
+     * 
+     * @param {int} charId 
+     * @select : selects new instance to use with keyboard controller
+     */
     selectCharacter(charId)
     {
         const foundCharacter = this.characters.find(function matchId(c)
@@ -174,6 +184,11 @@ export class InstanceManager extends EventTarget
         }
     }
 
+    /**
+     * @param {Object} character 
+     * @description 
+     *      - generate new button with character.id + imageKey to apply the correct CSS styles  
+     */
     addToList(character)
     {
         const listItem = document.createElement('li');
@@ -189,7 +204,8 @@ export class InstanceManager extends EventTarget
         selectButton.textContent = 'SELECT';
         selectButton.classList.add('select-btn');
         selectButton.dataset.characterId = character.id;
-        // MODIFICACIÓN: Añadir la clase de color correspondiente al botón de seleccionar
+        
+        // Añadir la clase de color correspondiente al botón de seleccionar
         if (this.setupUI.colors[character.imageKey]) {
             selectButton.classList.add(this.setupUI.colors[character.imageKey].selectClass);
         }
@@ -208,7 +224,11 @@ export class InstanceManager extends EventTarget
             console.error("Error: setupUI.charactersList no está inicializada.");
         }
     }
-
+    
+    /**
+     * @description
+     *      - visual update of the selected character instance
+     */
     updateHiglight()
     {
         if (this.setupUI.charactersList) {

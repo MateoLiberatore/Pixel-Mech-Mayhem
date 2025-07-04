@@ -11,15 +11,12 @@ export class ResourceLoader extends EventTarget
         this.totalResources = 0;
         this.loadedResources = 0;
         this.percentage = 0;
-        // escribir esto en el codigo cuando se usa
-        //https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/Image
-        //fetch
         this.loadCompleteEvent = new CustomEvent('loaded', { detail: this.cache }); 
     }
 
     /**
-     * @method loadImages 
-     * @param {dict} sources - dict de src's de las imagenes a cargar.    
+     * @method 
+     * @param {dict} sources - dict of src's of the image to load.    
      */
     loadImages(dict) 
     {
@@ -27,10 +24,9 @@ export class ResourceLoader extends EventTarget
         this.resetLoader(total);
 
         if (this.totalResources === 0) 
-        { this.dispatchLoadComplete(); return;} // si no hay nada para cargar corta
+        { this.dispatchLoadComplete(); return;} 
 
         for (const id in dict) {
-            //fech para control de carga
             if (dict.hasOwnProperty(id)) {
                 this.loadImage(id, dict[id]);
             }
@@ -38,8 +34,8 @@ export class ResourceLoader extends EventTarget
     }
 
     /**
-     * @method resetLoader 
-     * @param {Int} total - cantidad de recursos a cargar 
+     * @method 
+     * @param {Int}     total       - cantidad de recursos a cargar 
      */
     resetLoader(total) 
     {
@@ -51,8 +47,8 @@ export class ResourceLoader extends EventTarget
 
     /**
      * @method loadImage
-     * @param {int} id - id en diccionario
-     * @param {string} resource - src de la imagen en diccionario
+     * @param {int}     id          - id en diccionario
+     * @param {string}  resource    - src de la imagen en diccionario
      */
      loadImage(id, src) 
     {

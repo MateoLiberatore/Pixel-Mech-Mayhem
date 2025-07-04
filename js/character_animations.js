@@ -45,7 +45,8 @@ export class Character
 
         /**
          * @type {Object} 
-         * - movement classes, they manage animation loops and movement around the canvas
+         * @description
+         *      - movement classes, they manage animation loops and movement around the canvas
          */
         this.rightStepAction = new RightStep(this);
         this.leftStepAction  = new LeftStep(this);
@@ -54,7 +55,8 @@ export class Character
 
         /**
          * @type {string}
-         * - states to representig movements
+         * @description
+         *      - states to representig movements
          */
         this.states =   
         {
@@ -66,10 +68,11 @@ export class Character
 
         /**
          * @type {string, state}
-         * - state:
-         *      - setup
-         *      - management
-         *      - representation
+         * @description
+         *      - state:
+         *          - setup
+         *          - management
+         *          - representation
          */
         this.currentState = 'idle';
         this.currentAction = this.states[this.currentState];
@@ -129,7 +132,7 @@ export class Character
     /**
      * @method
      * @fires cancelAnimationFrame()
-     * - animationFrameId = null;
+     *      - animationFrameId = null;
      */
     cancelAnimation()
     {
@@ -144,13 +147,20 @@ export class Character
      * @method
      * @implements {draw()}
      * @implements {class.update()}
-     * - uses the update method of the corresponding animation class
+     * @description
+     *      - uses the update method of the corresponding animation class
      */
     update()
     {
         this.currentAction.update(); // first, updates the intern state of the action
         this.draw();                 // then draws the character with the updated states
     }
+
+    /**
+     * @method
+     * @description
+     *      - draw te corresponding frame alocated in each class loopindex
+     */
     draw()
     {
         const currentFrameX = this.loopIndex;
@@ -185,9 +195,11 @@ class RightStep
     {
         /**
          * @constructor
-         * @param    {Object}      Character
-         * @property {sprite row}  cycleLoop    - row of sprite images
-         * @property {loopIndex}   
+         * @param    {Object}       Character
+         * @property {sprite row}   cycleLoop   - sprite images
+         * @property {loopIndex}    loopIndex   - current sprite
+         * @property {frameY}       frameY      - row of srpites selected
+         * @property {frameCount}   frameCount  - tracking of draw frames   
          */
         this.character    = character;
         this.cycleLoop    = [0,1,2,3,4,5];
@@ -196,12 +208,25 @@ class RightStep
         this.frameCount   = 0;
     }
 
+    /**
+     * @method
+     * @description
+     *      - init the loop index in the first frame selected
+     *      - set direction to define movement animation orientation
+     */
     init()
     {
         this.loopIndex = 0;
         this.character.characterDirection = 'right';
     }
-
+    
+    /**
+     * @method
+     * @description
+     *      - updates instance position to the right 'movement'
+     *      - limit the movement to the canvas size
+     *      - regulates animation speed (15 frames/s)
+     */
     update()
     {
         this.character.canvasX += this.character.speed;
@@ -226,6 +251,14 @@ class LeftStep
 {
     constructor(character)
     {
+        /**
+         * @constructor
+         * @param    {Object}       Character
+         * @property {sprite row}   cycleLoop   - sprite images
+         * @property {loopIndex}    loopIndex   - current sprite
+         * @property {frameY}       frameY      - row of srpites selected
+         * @property {frameCount}   frameCount  - tracking of draw frames   
+         */
         this.character    = character;
         this.cycleLoop    = [0,1,2,3,4,5];
         this.loopIndex    = 0;
@@ -233,12 +266,26 @@ class LeftStep
         this.frameY       = 1;
     }
 
+    /**
+     * @method
+     * @description
+     *      - init the loop index in the first frame selected
+     *      - set direction to define movement animation orientation
+     */
     init()
     {
         this.loopIndex = 0;
         this.character.characterDirection = 'left';
     }
 
+
+    /**
+     * @method
+     * @description
+     *      - updates instance position to the right 'movement'
+     *      - limit the movement to the canvas size
+     *      - regulates animation speed (15 frames/s)
+     */
     update()
     {
         this.character.canvasX -= this.character.speed;
@@ -256,11 +303,19 @@ class LeftStep
         this.character.frameY = this.frameY;
     }
 }
-
+/**
+ * @class
+ * @description
+ *      - The Jump class is different from other movement classes. It has its own animation loop,
+ *        which is represented by a single static image frame.
+ *      - The focus is on simulating a parabolic trajectory, so there's no need to cycle through multiple frames.
+ *      - All the effort is dedicated to creating and applying a physics-based simulation.
+ *        Once the jump is complete, the character returns to a state where other movements can be used again.
+ */
 class Jump 
 {
     /**
-     * @param       {Character} character - La instancia del personaje.
+     * @param       {Character} character - The character instance.
      * @property    {canvas}    canvas
      */
     constructor(character)
@@ -270,53 +325,65 @@ class Jump
         this.context        = character.context;
         this.img            = character.image;
 
-        this.x              = character.canvasX;                        // Posición X actual del salto
-        this.y              = character.canvasY;                        // Posición Y actual del salto
+        this.x              = character.canvasX;                        
+        this.y              = character.canvasY;                        
         
-        this.cycleLoop      = [5];                                      // Repetimos el índice 5
+        this.cycleLoop      = [5];                                      
         this.loopIndex      = 0;
         this.frameCount     = 0;
-        this.frameY         = 0;                                        // fila para la animacion de salto
+        this.frameY         = 0;                                        // Row for the jump animation
 
-        this.gravity                    = 0.08;                         // gravedad para aplicar a los movimient0s
-        this.initialJumpVelocity        = -4.5;                         // Ajusta este valor para una altura de salto mayor/menor
+        this.gravity                    = 0.08;                         // Gravity to apply to vertical movement
+        this.initialJumpVelocity        = -4.5;                         // Adjust this value for higher/lower jump
 
-        this.velocityY      = 0;                                        // Velocidad ascendente 
-        this.velocityX      = 0;                                        // Velocidad horizontal durante el salto
-        this.jumpDirection  = 0;                                        // -1 para izquierda, 0 para arriba, 1 para derecha
+        this.velocityY      = 0;                                        // Vertical velocity
+        this.velocityX      = 0;                                        // Horizontal velocity during the jump
+        this.jumpDirection  = 0;                                        // -1 for left, 0 for straight up, 1 for right
         
         this.init           = this.init.bind(this);
-        this.update         = this.update.bind(this);                   // Enlaza el contexto 'this' al método jump
+        this.update         = this.update.bind(this);                   
     }
 
-    
+    /**
+     * @method
+     * @param {Direction}   jumpDirection 
+     * @description
+     *      - Uses the direction state so the draw() method can use the corresponding orientation
+     */
     init(jumpDirection) 
     { 
         this.character.isJumping = true;
-        this.character.velocityY = this.initialJumpVelocity;            // Usa la velocidad inicial definida en el constructor
-        this.jumpDirection = jumpDirection;                             // direccion del salto
+        this.character.velocityY = this.initialJumpVelocity;            // Use the initial upward velocity
+        this.jumpDirection = jumpDirection;                             // Direction of the jump
 
-        this.character.frameY = this.frameY;                            // fila delsprite
-        this.character.loopIndex = this.cycleLoop;                      // frame del salto
+        this.character.frameY = this.frameY;                            // Sprite row
+        this.character.loopIndex = this.cycleLoop;                      // Jump frame
     }
+
+    /**
+     * @method
+     * @description
+     *      - updates canvas location during the movement
+     *      - updates character orientation to draw
+     *      - prevents going off the canvas edge
+     */
     update() 
     {
-        this.character.canvasY += this.character.velocityY;             // -7 + 0.15 = -6.85 ... -6.85 + 0.15 = -6.7 ...
-        this.character.velocityY += this.gravity;                       // hasta que se vuelve positivo ej: de (-7) a 7
-                                                                        // asi se emula una parabola
-                     
-        if (this.jumpDirection === 1)                                   // Mover horizontalmente durante el salto
+        this.character.canvasY += this.character.velocityY;             // Apply vertical movement
+        this.character.velocityY += this.gravity;                       // Gradually increase downward velocity (parabola)
+
+        if (this.jumpDirection === 1)                                   
         {
             this.character.canvasX += this.character.speed;
             this.character.characterDirection = 'right';
         } 
-        else if (this.jumpDirection === -1) 
+        else if (this.jumpDirection === -1)                             
         {
             this.character.canvasX -= this.character.speed;
             this.character.characterDirection = 'left';
         }
 
-        if (this.character.canvasX < 0)                                 // Limitar la posición horizontal
+        if (this.character.canvasX < 0)                                 // Prevent going off the left edge
         {
             this.character.canvasX = 0;
         } 
@@ -325,40 +392,58 @@ class Jump
             this.character.canvasX = this.character.canvas.width - this.character.scaledWidth;
         }
 
-        // Aterrizaje
+        // Landing
         if (this.character.canvasY >= this.character.groundY) 
         {
             this.character.canvasY = this.character.groundY;
             this.character.isJumping = false;
             this.character.velocityY = 0;
-            this.character.setState('idle');                    // Vuelve al estado 'idle'
-            this.character.cancelAnimation();                   // Cancela el bucle de animación del salto
+            this.character.setState('idle');                    // Return to 'idle' state
+            this.character.cancelAnimation();                   // Stop the jump animation loop
             return;
         }
     }
 }
 
+/**
+ * @class
+ * @description
+ *      - Initializer of the 'idle' state
+ */
 class Stop
 {
-    constructor(character) {
-        this.character    = character;
-
-        this.loopIndex = 0;
-        this.frameCount = 0;
-        this.frameY = 0;
+    constructor(character) 
+    {
+        /**
+         * 
+         */
+        this.character      = character;
+        this.loopIndex      = 0;
+        this.frameCount     = 0;
+        this.frameY         = 0;
     }
 
+    /**
+     * @method
+     * @description
+     *      - initializes values in 0
+     */
     init()
     {
-        this.loopIndex = 0;
-        this.frameCount = 0;
+        this.loopIndex      = 0;
+        this.frameCount     = 0;
     }
 
+    /**
+     * @method
+     * @description
+     *      - sets all to 0;
+     */
     update()
     {
-       this.loopIndex = 0;
-       this.frameCount = 0;
+       this.loopIndex           = 0;
+       this.frameCount          = 0;
        this.character.loopIndex = this.loopIndex;
-       this.character.frameY = this.frameY;
+       this.character.frameY    = this.frameY;
     }
 }

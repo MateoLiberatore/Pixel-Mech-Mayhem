@@ -4,6 +4,7 @@ export function drawFrame(frameX, frameY, canvasX, canvasY,
     context.drawImage(img,
     frameX * width, frameY * height, width, height,
     Math.floor(canvasX), Math.floor(canvasY), scaledWidth, scaledHeight);
+    // using Math.() to ensure to be using round numbers
 }
 
 export function flipView(
@@ -13,9 +14,9 @@ export function flipView(
             width, height,
             scaledWidth, scaledHeight)
 {
-        context.save(); // Guardamos el estado del contexto
+        context.save();     // save context state
         context.translate(Math.floor(canvasX) + scaledWidth, Math.floor(canvasY));
-        context.scale(-1, 1); // espejo
+        context.scale(-1, 1); // mirror
     
         drawFrame(
             frameX, frameY,
@@ -25,6 +26,6 @@ export function flipView(
             scaledWidth, scaledHeight
         );
     
-        context.restore(); // Restauramos el contexto original
+        context.restore(); 
 }
 

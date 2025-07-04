@@ -1,6 +1,7 @@
 
 /**
- * Configura y devuelve un elemento canvas.
+ * @description
+ *      - Configura y devuelve un elemento canvas.
  * @returns {HTMLCanvasElement} El elemento canvas encontrado.
  */
 export function setupCanvas() 
@@ -21,8 +22,8 @@ export function setupCanvas()
 }
 
 /**
- * @param {Document} canvas - el canvas del html    
- * @returns {context} El elemento canvas encontrado.
+ * @param   {Document}  canvas - el canvas del html    
+ * @returns {context}   El elemento canvas encontrado.
  */
 export function setupContext(canvas)
 {
